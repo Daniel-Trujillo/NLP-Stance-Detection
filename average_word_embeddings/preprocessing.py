@@ -2,8 +2,10 @@ from csv import DictReader
 import nltk
 from nltk.stem import WordNetLemmatizer
 import pandas as pd
+from nltk.corpus import stopwords
 
 nltk.download('wordnet')
+nltk.download('stopwords')
   
 class DataSet():
     def __init__(self, name="train", path="./FNC-1"):
@@ -47,7 +49,9 @@ class DataSet():
 
     
     def preprocess(self):
-        lemmatizer = WordNetLemmatizer()
+        lemmatizer = WordNetLemmatizer() 
+        data = "All work and no play makes jack dull boy. All work and no play makes jack a dull boy."
+        stopWords = set(stopwords.words('english'))
 
         data = {'ID': [], 'Headline': [], 'Body': [], 'Stance': []}
 
@@ -60,11 +64,11 @@ class DataSet():
             # Now do magic stuff
             headline_tokens = nltk.word_tokenize(headline)
             headline_lemmatized = [lemmatizer.lemmatize(w) for w in headline_tokens]
-            data['Headline'].append(headline_lemmatized)
+            data['Headline'].append([word for word in headline_lemmatized if word not in stopWords])
 
             body_tokens = nltk.word_tokenize(body)
             body_lemmatized = [lemmatizer.lemmatize(w) for w in body_tokens]
-            data['Body'].append(body_lemmatized)
+            data['Body'].append([word for word in body_lemmatized if word not in stopWords])
 
             data['Stance'].append(stance)
 
