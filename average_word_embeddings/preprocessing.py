@@ -13,23 +13,26 @@ class DataSet():
         bodies = name+"_bodies.csv"
         stances = name+"_stances.csv"
 
-        self.stances = self.read(stances)
+        self.old_stances = self.read(stances)
         articles = self.read(bodies)
         self.articles = dict()
         self.headlines = dict()
-
-        #make the body ID an integer value
-        for s in self.stances:
+        self.stances = dict()
+ 
+        # make the body ID an integer value
+        for s in self.old_stances:
             s['Body ID'] = int(s['Body ID'])
 
-        #copy all bodies into a dictionary
+        # copy all bodies into a dictionary
         for article in articles:
             self.articles[int(article['Body ID'])] = article['articleBody']
 
-        for s in self.stances:
+        # get the actual stance and stuff you dummy
+        for s in self.old_stances:
             self.headlines[int(s['Body ID'])] = s['Headline']
+            self.stances[int(s['Body ID'])] = s['Stance']
 
-        print("Total stances: " + str(len(self.stances)))
+        print("Total stances: " + str(len(self.old_stances)))
         print("Total bodies: " + str(len(self.articles)))
 
 
@@ -50,9 +53,9 @@ class DataSet():
 
         #self.headlines_lemmatized = pd.
         for bodyID in self.articles.keys():
-            stance = self.stances[bodyID]
-            body = self.articles[bodyID]
-            headline = self.headlines[bodyID]
+            stance = self.stances[bodyID].lower()
+            body = self.articles[bodyID].lower()
+            headline = self.headlines[bodyID].lower()
 
             # Now do magic stuff
             headline_tokens = nltk.word_tokenize(headline)
@@ -68,5 +71,8 @@ class DataSet():
             data['ID'].append(bodyID)
 
         df = pd.DataFrame(data)
+        self.df = df
+        return df
 
 ds = DataSet()
+ds.preprocess()
