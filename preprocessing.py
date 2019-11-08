@@ -48,7 +48,7 @@ class DataSet():
         return rows
 
     
-    def preprocess(self):
+    def preprocess(self, lemmatize=True, removeStop=True):
         lemmatizer = WordNetLemmatizer() 
         data = "All work and no play makes jack dull boy. All work and no play makes jack a dull boy."
         stopWords = set(stopwords.words('english'))
@@ -63,12 +63,17 @@ class DataSet():
 
             # Now do magic stuff
             headline_tokens = nltk.word_tokenize(headline)
-            headline_lemmatized = [lemmatizer.lemmatize(w) for w in headline_tokens]
-            data['Headline'].append([word for word in headline_lemmatized if word not in stopWords])
-
             body_tokens = nltk.word_tokenize(body)
-            body_lemmatized = [lemmatizer.lemmatize(w) for w in body_tokens]
-            data['Body'].append([word for word in body_lemmatized if word not in stopWords])
+            if lemmatize:
+                headline_tokens = [lemmatizer.lemmatize(w) for w in headline_tokens]
+                body_tokens = [lemmatizer.lemmatize(w) for w in body_tokens]
+
+            if removeStop:
+                data['Headline'].append([word for word in headline_tokens if word not in stopWords])
+                data['Body'].append([word for word in body_tokens if word not in stopWords])
+            else:
+                data['Headline'].append(headline_tokens)
+                data['Body'].append(body_tokens)
 
             data['Stance'].append(stance)
 
@@ -79,4 +84,4 @@ class DataSet():
         return df
 
 ds = DataSet()
-ds.preprocess()
+print(ds.preprocess(False, False)["Body"])
