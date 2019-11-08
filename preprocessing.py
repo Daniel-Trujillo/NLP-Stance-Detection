@@ -3,6 +3,7 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 import pandas as pd
 from nltk.corpus import stopwords
+import string
 
 nltk.download('wordnet')
 nltk.download('stopwords')
@@ -47,7 +48,7 @@ class DataSet():
                 rows.append(line)
         return rows
 
-    def preprocess(self, lemmatize=True, removeStop=True):
+    def preprocess(self, lemmatize=True, removeStop=True, removePunc=False):
         lemmatizer = WordNetLemmatizer()
         data = "All work and no play makes jack dull boy. All work and no play makes jack a dull boy."
         stopWords = set(stopwords.words('english'))
@@ -59,6 +60,10 @@ class DataSet():
             stance = self.stances[bodyID].lower()
             body = self.articles[bodyID].lower()
             headline = self.headlines[bodyID].lower()
+
+            if removePunc:
+                body = body.translate(None, string.punctuation)
+                headline = headline.translate(None, string.punctuation)
 
             # Now do magic stuff
             headline_tokens = nltk.word_tokenize(headline)
