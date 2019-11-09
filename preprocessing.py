@@ -62,8 +62,9 @@ class DataSet():
             headline = self.headlines[bodyID].lower()
 
             if removePunc:
-                body = body.translate(None, string.punctuation)
-                headline = headline.translate(None, string.punctuation)
+                translator = str.maketrans('', '', string.punctuation)
+                body = body.translate(translator)
+                headline = headline.translate(translator)
 
             # Now do magic stuff
             headline_tokens = nltk.word_tokenize(headline)
