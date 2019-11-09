@@ -11,32 +11,28 @@ nltk.download('stopwords')
 
 class DataSet():
     def __init__(self, name="train", path="./FNC-1"):
+        self.lemmatizer = WordNetLemmatizer()
+        self.stopWords = set(stopwords.words('english'))
+        self.data = {'BodyID': [], 'Headline': [], 'Body': [], 'Stance': []}
         self.path = path
 
         print("Reading dataset")
         bodies = name + "_bodies.csv"
         stances = name + "_stances.csv"
 
-        self.old_stances = self.read(stances)
+        self.stances = self.read(stances)
         articles = self.read(bodies)
         self.articles = dict()
-        self.headlines = dict()
-        self.stances = dict()
 
-        # make the body ID an integer value
-        for s in self.old_stances:
+        #make the body ID an integer value
+        for s in self.stances:
             s['Body ID'] = int(s['Body ID'])
 
-        # copy all bodies into a dictionary
+        #copy all bodies into a dictionary
         for article in articles:
             self.articles[int(article['Body ID'])] = article['articleBody']
 
-        # get the actual stance and stuff you dummy
-        for s in self.old_stances:
-            self.headlines[int(s['Body ID'])] = s['Headline']
-            self.stances[int(s['Body ID'])] = s['Stance']
-
-        print("Total stances: " + str(len(self.old_stances)))
+        print("Total stances: " + str(len(self.stances)))
         print("Total bodies: " + str(len(self.articles)))
 
     def read(self, filename):
@@ -48,40 +44,31 @@ class DataSet():
                 rows.append(line)
         return rows
 
-    def preprocess(self, lemmatize=True, removeStop=True, removePunc=False):
-        lemmatizer = WordNetLemmatizer()
-        data = "All work and no play makes jack dull boy. All work and no play makes jack a dull boy."
-        stopWords = set(stopwords.words('english'))
+    def preprocess_text(self, text, lemmatize=True, remove_stop=True, remove_punc=False):
+        text = text.lower()
+        if remove_punc:
+            translator = str.maketrans('', '', string.punctuation)
+            text = text.translate(translator)
+        # Now do magic stuff
+        text_tokens = nltk.word_tokenize(text)
+        if lemmatize:
+            text_tokens = [self.lemmatizer.lemmatize(w) for w in text_tokens]
+        if remove_stop:
+            text_tokens = [word for word in text_tokens if word not in self.stopWords]
+        return text_tokens
 
-        data = {'ID': [], 'Headline': [], 'Body': [], 'Stance': []}
+    def preprocess(self, lemmatize=True, remove_stop=True, remove_punc=False):
 
-        # self.headlines_lemmatized = pd.
-        for bodyID in self.articles.keys():
-            stance = self.stances[bodyID].lower()
-            body = self.articles[bodyID].lower()
-            headline = self.headlines[bodyID].lower()
+        for bodyID, body in self.articles.items():
+            self.articles[bodyID] = self.preprocess_text(body, lemmatize, remove_stop, remove_punc)
 
-            if removePunc:
-                translator = str.maketrans('', '', string.punctuation)
-                body = body.translate(translator)
-                headline = headline.translate(translator)
-
-            # Now do magic stuff
-            headline_tokens = nltk.word_tokenize(headline)
-            body_tokens = nltk.word_tokenize(body)
-            if lemmatize:
-                headline_tokens = [lemmatizer.lemmatize(w) for w in headline_tokens]
-                body_tokens = [lemmatizer.lemmatize(w) for w in body_tokens]
-
-            if removeStop:
-                data['Headline'].append([word for word in headline_tokens if word not in stopWords])
-                data['Body'].append([word for word in body_tokens if word not in stopWords])
-            else:
-                data['Headline'].append(headline_tokens)
-                data['Body'].append(body_tokens)
-
-            data['Stance'].append(stance)
-
-            data['ID'].append(bodyID)
-
-        return pd.DataFrame(data)
+        for i, stance in enumerate(self.stances):
+            bodyID = int(stance['Body ID'])
+            stance_label = stance['Stance'].lower()
+            body = self.articles[bodyID]
+            headline = self.preprocess_text(stance['Headline'], lemmatize, remove_stop, remove_punc)
+            self.data['BodyID'].append(bodyID)
+            self.data['Headline'].append(headline)
+            self.data['Body'].append(body)
+            self.data['Stance'].append(stance_label)
+        return pd.DataFrame(self.data)
