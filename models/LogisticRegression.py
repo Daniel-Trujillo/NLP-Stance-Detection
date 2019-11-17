@@ -1,6 +1,6 @@
 from sklearn.linear_model import LogisticRegression
 from sklearn.neural_network import MLPClassifier
-from models import models
+from models import Models
 
 
 # Logistic Regression
