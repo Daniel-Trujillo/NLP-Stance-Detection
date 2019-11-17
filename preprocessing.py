@@ -72,3 +72,6 @@ class DataSet():
             self.data['Body'].append(body)
             self.data['Stance'].append(stance_label)
         return pd.DataFrame(self.data)
+
+    def get_labels(self):
+        return [stance['Stance'].lower() for stance in self.stances]
