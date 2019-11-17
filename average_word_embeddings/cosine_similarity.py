@@ -43,7 +43,3 @@ class CosineSimilarity():
         with open(path, 'wb') as f:
             pickle.dump(features, f)
 
-
-cs = CosineSimilarity()
-cs.create_feature_file("test.pkl")
-
