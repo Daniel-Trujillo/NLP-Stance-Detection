@@ -2,17 +2,19 @@ from preprocessing import DataSet
 from gensim.models import KeyedVectors
 import sklearn
 import pickle
+from preprocessing import DataSet
 
 #nltk.download('wordnet')
 #nltk.download('stopwords')
 
 class CosineSimilarity():
-    def __init__(self):
-        # load the google word2vec model
-        self.model = KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin', binary=True)
+    def __init__(self, name="train", path="../FNC-1", lemmatize=True, remove_stop=True, remove_punc=False):
+        self.model = KeyedVectors.load_word2vec_format('../average_word_embeddings/GoogleNews-vectors-negative300.bin', binary=True)
         self.bodies = {}
+        self.ds = DataSet(name, path)
+        self.data = self.ds.preprocess(lemmatize, remove_stop, remove_punc)
 
-    def get_features(self, data):
+    def get_feature(self, data):
         cosine_similarities = []
 
         for index, row in data.iterrows():
@@ -35,16 +37,13 @@ class CosineSimilarity():
 
         return cosine_similarities
 
-    def create_features_file(self, data, path):
-        features = self.get_features(data)
+    def create_feature_file(self, path):
+        features = self.get_feature(self.data)
 
         with open(path, 'wb') as f:
             pickle.dump(features, f)
 
 
-ds = DataSet(path='../FNC-1')
-df = ds.preprocess(lemmatize=True, remove_stop=True, remove_punc=False)
-
 cs = CosineSimilarity()
-print(cs.get_features(df))
+cs.create_feature_file("test.pkl")
 
