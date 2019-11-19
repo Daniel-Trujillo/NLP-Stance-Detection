@@ -1,18 +1,10 @@
 from sklearn.linear_model import LogisticRegression
 from models import Models
-from sklearn.metrics import f1_score, make_scorer, confusion_matrix
-import numpy as np
+from sklearn.metrics import f1_score, make_scorer
 
-def own_F1_score(true, pred):
-    confusion = confusion_matrix(true, pred)
-    TP = np.diag(confusion)
-    FP = confusion.sum(axis=0) - TP
-    FN = confusion.sum(axis=1) - TP
-
-    F1 = (2 * TP) / (2 * TP + FP + FN)
-
-    macro = np.sum(F1) / F1.size
-    micro = 2 * np.sum(TP) / (2 * np.sum(TP) + np.sum(FP) + np.sum(FN))
+def mixed_F1(true, pred):
+    micro = f1_score(true, pred, average='micro')
+    macro = f1_score(true, pred, average='macro')
 
     return (macro + micro) / 2
 
@@ -28,7 +20,7 @@ lr = LogisticRegression()
 
 models = Models(lr)
 
-best_params, mean, std = models.grid_search(model=lr, parameters=parameter_space, k=10, scoring=make_scorer(own_F1_score))
+best_params, mean, std = models.grid_search(model=lr, parameters=parameter_space, k=10, scoring=make_scorer(mixed_F1))
 
 print(best_params)
 
@@ -41,5 +33,5 @@ models.train()
 
 predictions, true = models.test()
 
-F1_score = own_F1_score(true, predictions)
+F1_score = mixed_F1(true, predictions)
 print("F1-Score testing: " + str(F1_score))
