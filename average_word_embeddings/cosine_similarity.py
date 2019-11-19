@@ -33,7 +33,10 @@ class CosineSimilarity():
 
             average_body = self.bodies[bodyID]
 
-            cosine_similarities.append(sklearn.metrics.pairwise.cosine_similarity([average_headline], [average_body])[0][0])
+            if len(average_headline) == 0 or len(average_body) == 0:
+                cosine_similarities.append(0)
+            else:
+                cosine_similarities.append(sklearn.metrics.pairwise.cosine_similarity([average_headline], [average_body])[0][0])
 
         return cosine_similarities
 
