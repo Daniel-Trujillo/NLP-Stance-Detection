@@ -1,4 +1,4 @@
-from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
 from models import Models
 from sklearn.metrics import f1_score, make_scorer
 
@@ -8,27 +8,30 @@ def mixed_F1(true, pred):
 
     return (macro + micro) / 2
 
+
 parameter_space = {
-        'solver': ['newton-cg', 'lbfgs', 'sag', 'saga'],
-        'fit_intercept': [True, False],
-        'multi_class': ['ovr', 'multinomial', 'auto'],
+        'solver': ['sgd', 'adam'],
+        'activation': ['tanh', 'relu'],
+        'hidden_layer_sizes': [(10, 10), (10, 100)],
+        'learning_rate': ['constant', 'adaptive'],
         'max_iter': [1000],
     }
 
-# Logistic Regression
-lr = LogisticRegression()
-
+lr = MLPClassifier()
 models = Models(lr)
-
 best_params, mean, std = models.grid_search(model=lr, parameters=parameter_space, k=10, scoring=make_scorer(mixed_F1))
 
-print(best_params)
+print(mean)
+print(std)
 
-print("Best parameters found a mean F1-score of " + str(mean) + " with a standard deviation of " + str(std))
+print(str(best_params))
 
-lr = LogisticRegression(fit_intercept=best_params['fit_intercept'], max_iter=10000, multi_class=best_params['multi_class'], solver=best_params['solver'])
+
+lr = MLPClassifier(solver=best_params['solver'], activation=best_params['activation'],
+                   hidden_layer_sizes=best_params['hidden_layer_sizes'], learning_rate=best_params['learning_rate'],
+                   max_iter=10000)
+
 models.model = lr
-
 models.train()
 
 predictions, true = models.test()
