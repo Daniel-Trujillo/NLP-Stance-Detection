@@ -16,7 +16,6 @@ class Models:
     def __init__(self, modelInstance):
         self.model = modelInstance
 
-    def train(self):
         if not os.path.exists(COSINE_SIMILARITY_FILE):
             cs = cosine_similarity.CosineSimilarity()
             cs.create_feature_file(COSINE_SIMILARITY_FILE)
@@ -28,15 +27,9 @@ class Models:
         cosine_sim_features = np.array(pickle.load(open(COSINE_SIMILARITY_FILE, 'rb'))).reshape(-1, 1)
         n_gram_features = np.array(pickle.load(open(N_GRAM_FEATURE_FILE, 'rb'))).reshape(-1, 1)
 
-        features = np.append(cosine_sim_features, n_gram_features, axis=1)
+        self.features_train = np.append(cosine_sim_features, n_gram_features, axis=1)
+        self.labels_train = DataSet(path="../FNC-1").get_labels()
 
-        ds = DataSet(path="../FNC-1")
-        labels = ds.get_labels()
-
-        self.model.fit(features, labels)
-        return self.model
-
-    def test(self):
         if not os.path.exists(COSINE_SIMILARITY_TEST_FILE):
             cs = cosine_similarity.CosineSimilarity(name="competition_test")
             cs.create_feature_file(COSINE_SIMILARITY_TEST_FILE)
@@ -45,38 +38,22 @@ class Models:
             ngram = n_gram_matching.NGramMatching(name="competition_test")
             ngram.create_feature_file(N_GRAM_FEATURE_TEST_FILE)
 
-        cosine_sim_features = np.array(pickle.load(open(COSINE_SIMILARITY_TEST_FILE, 'rb'))).reshape(-1, 1)
-        n_gram_features = np.array(pickle.load(open(N_GRAM_FEATURE_TEST_FILE, 'rb'))).reshape(-1, 1)
+        cosine_sim_features_test = np.array(pickle.load(open(COSINE_SIMILARITY_TEST_FILE, 'rb'))).reshape(-1, 1)
+        n_gram_features_test = np.array(pickle.load(open(N_GRAM_FEATURE_TEST_FILE, 'rb'))).reshape(-1, 1)
 
-        features = np.append(cosine_sim_features, n_gram_features, axis=1)
+        self.features_test = np.append(cosine_sim_features_test, n_gram_features_test, axis=1)
+        self.labels_test = DataSet(path="../FNC-1", name="competition_test")
 
-        test_ds = DataSet(path="../FNC-1", name="competition_test")
-        test_labels = test_ds.get_labels()
+    def train(self):
+        self.model.fit(self.features_train, self.labels_train)
+        return self.model
 
-        return self.model.predict(features), test_labels
+    def test(self):
+        return self.model.predict(self.features_test), self.labels_test
 
-    def grid_search(self, model, parameters, k, scoring):
-        if not os.path.exists(COSINE_SIMILARITY_FILE):
-            cs = cosine_similarity.CosineSimilarity()
-            cs.create_feature_file(COSINE_SIMILARITY_FILE)
-
-        if not os.path.exists(N_GRAM_FEATURE_FILE):
-            ngram = n_gram_matching.NGramMatching()
-            ngram.create_feature_file(N_GRAM_FEATURE_FILE)
-
-        cosine_sim_features = np.array(pickle.load(open(COSINE_SIMILARITY_FILE, 'rb'))).reshape(-1, 1)
-        n_gram_features = np.array(pickle.load(open(N_GRAM_FEATURE_FILE, 'rb'))).reshape(-1, 1)
-
-        features = np.append(cosine_sim_features, n_gram_features, axis=1)
-
-        ds = DataSet(path="../FNC-1")
-        labels = ds.get_labels()
-
-        clf = GridSearchCV(model, parameters, cv=k, scoring=scoring)
-
-        clf.fit(features, labels)
-
-        mean = clf.cv_results_['mean_test_score'][0]
-        std = clf.cv_results_['std_test_score'][0]
-
-        return clf.best_params_, mean, std
+    def grid_search(self, parameters, k, scoring):
+        clf_cv = GridSearchCV(self.model, param_grid=parameters, cv=k, scoring=scoring)
+        clf_cv.fit(self.features_train, self.labels_train)
+        mean = clf_cv.cv_results_['mean_test_score'][0]
+        std = clf_cv.cv_results_['std_test_score'][0]
+        return clf_cv.best_params_, mean, std

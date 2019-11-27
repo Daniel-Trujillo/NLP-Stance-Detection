@@ -20,7 +20,7 @@ lr = LogisticRegression()
 
 models = Models(lr)
 
-best_params, mean, std = models.grid_search(model=lr, parameters=parameter_space, k=10, scoring=make_scorer(mixed_F1))
+best_params, mean, std = models.grid_search(parameters=parameter_space, k=10, scoring=make_scorer(mixed_F1))
 
 print(best_params)
 
