@@ -93,7 +93,7 @@ class NGramMatching:
     def nGramMathing(self):
         idf = self.getIDF(self.data["Body"].to_numpy())
         features = []
-        for index, row in data.iterrows():
+        for index, row in self.data.iterrows():
             H = []
             A = []
             for n in range(1, 6):
