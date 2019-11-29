@@ -42,7 +42,7 @@ class Models:
         n_gram_features_test = np.array(pickle.load(open(N_GRAM_FEATURE_TEST_FILE, 'rb'))).reshape(-1, 1)
 
         self.features_test = np.append(cosine_sim_features_test, n_gram_features_test, axis=1)
-        self.labels_test = DataSet(path="../FNC-1", name="competition_test")
+        self.labels_test = DataSet(path="../FNC-1", name="competition_test").get_labels()
 
     def train(self):
         self.model.fit(self.features_train, self.labels_train)
