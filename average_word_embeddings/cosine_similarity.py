@@ -58,7 +58,7 @@ class CosineSimilarity:
 
     def read(self, name="train"):
         self.name = name
-        if type == 'train':
+        if name == 'train':
             if not os.path.exists(COSINE_SIMILARITY_FILE):
                 self.create_feature_file(COSINE_SIMILARITY_FILE)
             return np.array(pickle.load(open(COSINE_SIMILARITY_FILE, 'rb'))).reshape(-1, 1)

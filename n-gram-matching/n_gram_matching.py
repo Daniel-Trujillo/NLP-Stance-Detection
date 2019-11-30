@@ -65,7 +65,7 @@ class NGramMatching:
 
     def read(self, name="train"):
         self.name = name
-        if type == 'train':
+        if name == 'train':
             if not os.path.exists(N_GRAM_FEATURE_FILE):
                 self.create_feature_file(N_GRAM_FEATURE_FILE)
             return np.array(pickle.load(open(N_GRAM_FEATURE_FILE, 'rb'))).reshape(-1, 1)

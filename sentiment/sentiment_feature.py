@@ -41,11 +41,11 @@ class SentimentFeature:
 
     def read(self, name="train"):
         self.name = name
-        if type == 'train':
+        if name == 'train':
             if not os.path.exists(SENTIMENT_FILE):
                 self.create_feature_file(SENTIMENT_FILE)
-            return np.array(pickle.load(open(SENTIMENT_FILE, 'rb'))).reshape(-1, 1)
+            return np.array(pickle.load(open(SENTIMENT_FILE, 'rb')))
         else:
             if not os.path.exists(SENTIMENT_TEST_FILE):
                 self.create_feature_file(SENTIMENT_TEST_FILE)
-            return np.array(pickle.load(open(SENTIMENT_TEST_FILE, 'rb'))).reshape(-1, 1)
+            return np.array(pickle.load(open(SENTIMENT_TEST_FILE, 'rb')))
