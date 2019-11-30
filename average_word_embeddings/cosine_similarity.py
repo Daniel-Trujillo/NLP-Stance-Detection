@@ -3,18 +3,29 @@ from gensim.models import KeyedVectors
 import sklearn
 import pickle
 from preprocessing import DataSet
+import os
+import numpy as np
 
 #nltk.download('wordnet')
 #nltk.download('stopwords')
 
+COSINE_SIMILARITY_FILE = "../feature_files/similarity_features.pkl"
+COSINE_SIMILARITY_TEST_FILE = "../feature_files/similarity_test_features.pkl"
+
 class CosineSimilarity():
     def __init__(self, name="train", path="../FNC-1", lemmatize=True, remove_stop=True, remove_punc=False):
-        self.model = KeyedVectors.load_word2vec_format('../average_word_embeddings/GoogleNews-vectors-negative300.bin', binary=True)
+        self.model = KeyedVectors.load_word2vec_format('../average_word_embeddings/GoogleNews-vectors-negative300.bin.gz', binary=True)
         self.bodies = {}
-        self.ds = DataSet(name, path)
-        self.data = self.ds.preprocess(lemmatize, remove_stop, remove_punc)
+        self.path = "../FNC-1/"
+        self.name = name
+        self.lemmatize = lemmatize
+        self.remove_stop = remove_stop
+        self.remove_punc = remove_punc
 
-    def get_feature(self, data):
+
+    def get_feature(self):
+        ds = DataSet(self.name, self.path)
+        data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc)
         cosine_similarities = []
 
         for index, row in data.iterrows():
@@ -41,8 +52,18 @@ class CosineSimilarity():
         return cosine_similarities
 
     def create_feature_file(self, path):
-        features = self.get_feature(self.data)
+        features = self.get_feature()
 
         with open(path, 'wb') as f:
             pickle.dump(features, f)
+
+    def read(self, type="train"):
+        if type == 'train':
+            if not os.path.exists(COSINE_SIMILARITY_FILE):
+                self.create_feature_file(COSINE_SIMILARITY_FILE)
+            return np.array(pickle.load(open(COSINE_SIMILARITY_FILE, 'rb'))).reshape(-1, 1)
+        else:
+            if not os.path.exists(COSINE_SIMILARITY_TEST_FILE):
+                self.create_feature_file(COSINE_SIMILARITY_TEST_FILE)
+            return np.array(pickle.load(open(COSINE_SIMILARITY_TEST_FILE, 'rb'))).reshape(-1, 1)
 

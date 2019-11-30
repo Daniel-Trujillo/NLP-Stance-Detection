@@ -2,14 +2,19 @@ import numpy as np
 from preprocessing import DataSet
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
+import os
 
+N_GRAM_FEATURE_FILE = "../feature_files/ngram_matching.pkl"
+N_GRAM_FEATURE_TEST_FILE = "../feature_files/ngram_matching_test.pkl"
 
 class NGramMatching:
 
     def __init__(self, name="train", lemmatize=True, remove_stop=True, remove_punc=False):
         self.path = "../FNC-1/"
-        ds = DataSet(path=self.path, name=name)
-        self.data = ds.preprocess(lemmatize, remove_stop, remove_punc)
+        self.name = name
+        self.lemmatize = lemmatize
+        self.remove_stop = remove_stop
+        self.remove_punc = remove_punc
 
     def get_ngram(self, n, text):
         ngrams = {}
@@ -33,9 +38,11 @@ class NGramMatching:
         return dict(zip(vectorizer.get_feature_names(), idf))
 
     def nGramMathing(self):
-        idf = self.getIDF(self.data["Body"].to_numpy())
+        ds = DataSet(path=self.path, name=self.name)
+        data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc)
+        idf = self.getIDF(data["Body"].to_numpy())
         features = []
-        for index, row in self.data.iterrows():
+        for index, row in data.iterrows():
             H = []
             A = []
             for n in range(1, 6):
@@ -55,3 +62,13 @@ class NGramMatching:
     def create_feature_file(self, path):
         with open(path, 'wb') as f:
             pickle.dump(self.nGramMathing(), f)
+
+    def read(self, type="train"):
+        if type == 'train':
+            if not os.path.exists(N_GRAM_FEATURE_FILE):
+                self.create_feature_file(N_GRAM_FEATURE_FILE)
+            return np.array(pickle.load(open(N_GRAM_FEATURE_FILE, 'rb'))).reshape(-1, 1)
+        else:
+            if not os.path.exists(N_GRAM_FEATURE_TEST_FILE):
+                self.create_feature_file(N_GRAM_FEATURE_TEST_FILE)
+            return np.array(pickle.load(open(N_GRAM_FEATURE_TEST_FILE, 'rb'))).reshape(-1, 1)
