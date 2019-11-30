@@ -44,7 +44,7 @@ class DataSet():
                 rows.append(line)
         return rows
 
-    def preprocess_text(self, text, lemmatize=True, remove_stop=True, remove_punc=False):
+    def preprocess_text(self, text, lemmatize=True, remove_stop=True, remove_punc=False, sent=False):
         text = text.lower()
         if remove_punc:
             translator = str.maketrans('', '', string.punctuation)
@@ -55,18 +55,18 @@ class DataSet():
             text_tokens = [self.lemmatizer.lemmatize(w) for w in text_tokens]
         if remove_stop:
             text_tokens = [word for word in text_tokens if word not in self.stopWords]
-        return text_tokens
+        return ' '.join(text_tokens) if sent else text_tokens
 
-    def preprocess(self, lemmatize=True, remove_stop=True, remove_punc=False):
+    def preprocess(self, lemmatize=True, remove_stop=True, remove_punc=False, sent=False):
 
         for bodyID, body in self.articles.items():
-            self.articles[bodyID] = self.preprocess_text(body, lemmatize, remove_stop, remove_punc)
+            self.articles[bodyID] = self.preprocess_text(body, lemmatize, remove_stop, remove_punc, sent)
 
         for i, stance in enumerate(self.stances):
             bodyID = int(stance['Body ID'])
             stance_label = stance['Stance'].lower()
             body = self.articles[bodyID]
-            headline = self.preprocess_text(stance['Headline'], lemmatize, remove_stop, remove_punc)
+            headline = self.preprocess_text(stance['Headline'], lemmatize, remove_stop, remove_punc, sent)
             self.data['BodyID'].append(bodyID)
             self.data['Headline'].append(headline)
             self.data['Body'].append(body)
