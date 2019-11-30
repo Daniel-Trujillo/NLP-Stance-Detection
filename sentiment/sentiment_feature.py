@@ -39,7 +39,8 @@ class SentimentFeature:
         with open(path, 'wb') as f:
             pickle.dump(features, f)
 
-    def read(self, type="train"):
+    def read(self, name="train"):
+        self.name = name
         if type == 'train':
             if not os.path.exists(SENTIMENT_FILE):
                 self.create_feature_file(SENTIMENT_FILE)

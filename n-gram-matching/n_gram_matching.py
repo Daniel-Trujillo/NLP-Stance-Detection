@@ -63,7 +63,8 @@ class NGramMatching:
         with open(path, 'wb') as f:
             pickle.dump(self.nGramMathing(), f)
 
-    def read(self, type="train"):
+    def read(self, name="train"):
+        self.name = name
         if type == 'train':
             if not os.path.exists(N_GRAM_FEATURE_FILE):
                 self.create_feature_file(N_GRAM_FEATURE_FILE)

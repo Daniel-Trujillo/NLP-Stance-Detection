@@ -22,7 +22,6 @@ class CosineSimilarity:
         self.remove_stop = remove_stop
         self.remove_punc = remove_punc
 
-
     def get_feature(self):
         ds = DataSet(self.name, self.path)
         data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc)
@@ -57,7 +56,8 @@ class CosineSimilarity:
         with open(path, 'wb') as f:
             pickle.dump(features, f)
 
-    def read(self, type="train"):
+    def read(self, name="train"):
+        self.name = name
         if type == 'train':
             if not os.path.exists(COSINE_SIMILARITY_FILE):
                 self.create_feature_file(COSINE_SIMILARITY_FILE)

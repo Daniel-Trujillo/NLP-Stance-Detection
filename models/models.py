@@ -1,5 +1,6 @@
 import cosine_similarity
 import n_gram_matching
+from sentiment import sentiment_feature
 import numpy as np
 from preprocessing import DataSet
 from sklearn.model_selection import GridSearchCV
@@ -8,10 +9,12 @@ from sklearn.model_selection import GridSearchCV
 class Models:
     def __init__(self, modelInstance):
         self.model = modelInstance
-        features = [cosine_similarity.CosineSimilarity(), n_gram_matching.NGramMatching()]
+        features = [cosine_similarity.CosineSimilarity(),
+                    n_gram_matching.NGramMatching(),
+                    sentiment_feature.SentimentFeature()]
         self.features_train = np.hstack([feature.read() for feature in features])
         self.labels_train = DataSet(path="../FNC-1").get_labels()
-        self.features_test = np.hstack([feature.read('test') for feature in features])
+        self.features_test = np.hstack([feature.read('competition_test') for feature in features])
         self.labels_test = DataSet(path="../FNC-1", name="competition_test").get_labels()
 
     def train(self):
