@@ -7,10 +7,10 @@ import os
 N_GRAM_FEATURE_FILE = "../feature_files/ngram_matching.pkl"
 N_GRAM_FEATURE_TEST_FILE = "../feature_files/ngram_matching_test.pkl"
 
-class NGramMatching:
 
-    def __init__(self, name="train", lemmatize=True, remove_stop=True, remove_punc=False):
-        self.path = "../FNC-1/"
+class NGramMatching:
+    def __init__(self, path="../FNC-1/", name="train", lemmatize=True, remove_stop=True, remove_punc=False):
+        self.path = path
         self.name = name
         self.lemmatize = lemmatize
         self.remove_stop = remove_stop

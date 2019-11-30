@@ -1,4 +1,3 @@
-from preprocessing import DataSet
 from gensim.models import KeyedVectors
 import sklearn
 import pickle
@@ -6,17 +5,18 @@ from preprocessing import DataSet
 import os
 import numpy as np
 
-#nltk.download('wordnet')
-#nltk.download('stopwords')
+# nltk.download('wordnet')
+# nltk.download('stopwords')
 
 COSINE_SIMILARITY_FILE = "../feature_files/similarity_features.pkl"
 COSINE_SIMILARITY_TEST_FILE = "../feature_files/similarity_test_features.pkl"
 
-class CosineSimilarity():
+
+class CosineSimilarity:
     def __init__(self, name="train", path="../FNC-1", lemmatize=True, remove_stop=True, remove_punc=False):
         self.model = KeyedVectors.load_word2vec_format('../average_word_embeddings/GoogleNews-vectors-negative300.bin.gz', binary=True)
         self.bodies = {}
-        self.path = "../FNC-1/"
+        self.path = path
         self.name = name
         self.lemmatize = lemmatize
         self.remove_stop = remove_stop
