@@ -12,28 +12,33 @@ COSINE_SIMILARITY_TEST_FILE = "../feature_files/similarity_test_features.pkl"
 
 
 class SVD:
-    def __init__(self, name="train", path="../FNC-1", lemmatize=True, remove_stop=True, remove_punc=False):
+    def __init__(self, name="train", path="../FNC-1", lemmatize=True, remove_stop=True, remove_punc=False, sent=True):
         self.path = path
         self.name = name
         self.lemmatize = lemmatize
         self.remove_stop = remove_stop
         self.remove_punc = remove_punc
+        self.sent = sent
 
     def get_feature(self):
         ds = DataSet(self.name, self.path)
-        data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc)
+        data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc, self.sent)
 
+        vocabulary = set()
+        for i, row in data.iterrows():
+            vocabulary.update(row['Headline'].split(' '))
+            vocabulary.update(row['Body'].split(' '))
         headlines = data.Headline.to_numpy()
         bodies = data.Body.to_numpy()
-
-        vocabulary = [word for line in list(np.concatenate((headlines, bodies), axis=None)) for word in line]
-
-        # Getting rid of duplicates
-        vocabulary = set(vocabulary)
+        #
+        # vocabulary = [word for line in list(np.concatenate((headlines, bodies), axis=None)) for word in line]
+        #
+        # # Getting rid of duplicates
+        # vocabulary = set(vocabulary)
 
         # Making headlines and bodies strings
-        headlines = [" ".join(line) for line in headlines]
-        bodies = [" ".join(line) for line in bodies]
+        # headlines = [" ".join(line) for line in headlines]
+        # bodies = [" ".join(line) for line in bodies]
 
         vectorizer = TfidfVectorizer(vocabulary=vocabulary)
         headline_TF_IDF = vectorizer.fit_transform(headlines)
