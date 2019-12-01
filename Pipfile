@@ -14,6 +14,7 @@ ipykernel = "*"
 pylint = "*"
 pandas = "*"
 sklearn = "*"
+gensim = "*"
 
 [requires]
 python_version = "3.7"
