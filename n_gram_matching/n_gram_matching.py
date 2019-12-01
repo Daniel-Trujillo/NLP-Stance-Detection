@@ -8,6 +8,12 @@ N_GRAM_FEATURE_FILE = "../feature_files/ngram_matching.pkl"
 N_GRAM_FEATURE_TEST_FILE = "../feature_files/ngram_matching_test.pkl"
 
 
+def tokenizer(x):
+    return x
+
+def preprocessor(x):
+    return x
+
 class NGramMatching:
     def __init__(self, path="../FNC-1/", name="train", lemmatize=True, remove_stop=True, remove_punc=False):
         self.path = path
@@ -27,13 +33,19 @@ class NGramMatching:
         return ngrams
 
     def getIDF(self, tokens):
-        vectorizer = TfidfVectorizer(
-            use_idf=True,
-            tokenizer=lambda x: x,
-            preprocessor=lambda x: x,
-            ngram_range=(1, 5)
-        )
-        vectorizer.fit_transform(tokens)
+        if self.name == 'train':
+            vectorizer = TfidfVectorizer(
+                use_idf=True,
+                tokenizer=tokenizer,
+                preprocessor=preprocessor,
+                ngram_range=(1, 5)
+            )
+            vectorizer.fit(tokens)
+            with open("../feature_files/ngram_tfidf_vectorizer.pkl", 'wb') as f:
+                pickle.dump(vectorizer, f)
+            vectorizer.transform(tokens)
+        else:
+            vectorizer = pickle.load(open("../feature_files/ngram_tfidf_vectorizer.pkl", 'rb'))
         idf = vectorizer.idf_
         return dict(zip(vectorizer.get_feature_names(), idf))
 
