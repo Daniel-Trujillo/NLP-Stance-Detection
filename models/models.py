@@ -4,7 +4,7 @@ from sentiment import sentiment_feature
 import numpy as np
 from preprocessing import DataSet
 from sklearn.model_selection import GridSearchCV
-
+from sklearn.metrics import f1_score, accuracy_score, confusion_matrix
 
 class Models:
     def __init__(self, modelInstance):
@@ -21,7 +21,28 @@ class Models:
         self.model.fit(self.features_train, self.labels_train)
         return self.model
 
+    def mixed_F1(self, true, pred):
+        micro = f1_score(true, pred, average='micro')
+        macro = f1_score(true, pred, average='macro')
+        return (macro + micro) / 2
+
+    def evaluate(self, y_actual, y_pred):
+        print("Accuracy : ", accuracy_score(y_actual, y_pred))
+        print("Confusion matrix: \n", confusion_matrix(y_actual, y_pred))
+        print("F1 Score (macro): ", f1_score(y_actual, y_pred, average='macro'))
+        print("F1 Score (micro): ", f1_score(y_actual, y_pred, average='micro'))
+        print("F1 Score (weighted): ", f1_score(y_actual, y_pred, average='weighted'))
+        print("F1 Score: ", f1_score(y_actual, y_pred, average=None))
+        print("F1-Score (mixed): " + str(self.mixed_F1(y_actual, y_pred)))
+
     def test(self):
+        y_pred = self.model.predict(self.features_train)
+        print("Evaluation metrics for train data:")
+        self.evaluate(self.labels_train, y_pred)
+        print()
+        print("Evaluation metrics for test data:")
+        y_pred = self.model.predict(self.features_test)
+        self.evaluate(self.labels_test, y_pred)
         return self.model.predict(self.features_test), self.labels_test
 
     def grid_search(self, parameters, k, scoring):
