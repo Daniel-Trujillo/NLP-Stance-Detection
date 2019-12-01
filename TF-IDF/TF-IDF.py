@@ -4,13 +4,12 @@ from preprocessing import DataSet
 import os
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
 
 COSINE_SIMILARITY_FILE = "../feature_files/similarity_features.pkl"
 COSINE_SIMILARITY_TEST_FILE = "../feature_files/similarity_test_features.pkl"
 
 
-class SVD:
+class TFIDF:
     def __init__(self, name="train", path="../FNC-1", lemmatize=True, remove_stop=True, remove_punc=False, sent=True):
         self.path = path
         self.name = name
@@ -33,11 +32,6 @@ class SVD:
         vectorizer = TfidfVectorizer(vocabulary=vocabulary)
         headline_TF_IDF = vectorizer.fit_transform(headlines)
         body_TF_IDF = vectorizer.fit_transform(bodies)
-
-        # Selecting the top 50 components
-        svd = TruncatedSVD(n_components=50)
-        headline_TF_IDF = svd.fit(headline_TF_IDF)
-        body_TF_IDF = svd.fit(body_TF_IDF)
 
         return sklearn.metrics.pairwise.cosine_similarity(headline_TF_IDF, body_TF_IDF)
 
