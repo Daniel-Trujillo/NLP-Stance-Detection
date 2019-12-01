@@ -5,8 +5,8 @@ import os
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-COSINE_SIMILARITY_FILE = "../feature_files/similarity_features.pkl"
-COSINE_SIMILARITY_TEST_FILE = "../feature_files/similarity_test_features.pkl"
+TFIDF_FILE = "../feature_files/tfidf_features.pkl"
+TFIDF_TEST_FILE = "../feature_files/tfidf_test_features.pkl"
 
 
 class TFIDF:
@@ -44,10 +44,10 @@ class TFIDF:
     def read(self, name="train"):
         self.name = name
         if name == 'train':
-            if not os.path.exists(COSINE_SIMILARITY_FILE):
-                self.create_feature_file(COSINE_SIMILARITY_FILE)
-            return np.array(pickle.load(open(COSINE_SIMILARITY_FILE, 'rb'))).reshape(-1, 1)
+            if not os.path.exists(TFIDF_FILE):
+                self.create_feature_file(TFIDF_FILE)
+            return np.array(pickle.load(open(TFIDF_FILE, 'rb'))).reshape(-1, 1)
         else:
-            if not os.path.exists(COSINE_SIMILARITY_TEST_FILE):
-                self.create_feature_file(COSINE_SIMILARITY_TEST_FILE)
-            return np.array(pickle.load(open(COSINE_SIMILARITY_TEST_FILE, 'rb'))).reshape(-1, 1)
+            if not os.path.exists(TFIDF_TEST_FILE):
+                self.create_feature_file(TFIDF_TEST_FILE)
+            return np.array(pickle.load(open(TFIDF_TEST_FILE, 'rb'))).reshape(-1, 1)

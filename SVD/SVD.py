@@ -6,8 +6,8 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 
-COSINE_SIMILARITY_FILE = "../feature_files/similarity_features.pkl"
-COSINE_SIMILARITY_TEST_FILE = "../feature_files/similarity_test_features.pkl"
+SVD_FILE = "../feature_files/svd_features.pkl"
+SVD_TEST_FILE = "../feature_files/svd_test_features.pkl"
 
 
 class SVD:
@@ -50,10 +50,10 @@ class SVD:
     def read(self, name="train"):
         self.name = name
         if name == 'train':
-            if not os.path.exists(COSINE_SIMILARITY_FILE):
-                self.create_feature_file(COSINE_SIMILARITY_FILE)
-            return np.array(pickle.load(open(COSINE_SIMILARITY_FILE, 'rb'))).reshape(-1, 1)
+            if not os.path.exists(SVD_FILE):
+                self.create_feature_file(SVD_FILE)
+            return np.array(pickle.load(open(SVD_FILE, 'rb'))).reshape(-1, 1)
         else:
-            if not os.path.exists(COSINE_SIMILARITY_TEST_FILE):
-                self.create_feature_file(COSINE_SIMILARITY_TEST_FILE)
-            return np.array(pickle.load(open(COSINE_SIMILARITY_TEST_FILE, 'rb'))).reshape(-1, 1)
+            if not os.path.exists(SVD_TEST_FILE):
+                self.create_feature_file(SVD_TEST_FILE)
+            return np.array(pickle.load(open(SVD_TEST_FILE, 'rb'))).reshape(-1, 1)
