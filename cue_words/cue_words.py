@@ -19,22 +19,13 @@ class CueWords:
         with open("./cue_words/cue_word_list.txt", "r") as f:
             for line in f.readlines():
                 words_list.append(line.strip().lower())
-        wv = api.load('word2vec-google-news-300')
-        sims = []
-        for word in words_list:
-            try:
-                similars = wv.most_similar(word, topn=5)
-                for sim in similars:
-                    sims.append(sim[0])
-            except KeyError:
-                pass
-        words_list.extend(sims)
         return words_list
 
 
     def cue_words(self):
         ds = DataSet(path=self.path, name=self.name)
         data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc)
+        return data
         
 
 
