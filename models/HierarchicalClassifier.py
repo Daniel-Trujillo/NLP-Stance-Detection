@@ -1,6 +1,4 @@
-import sys
-sys.path.append('../')
-import cosine_similarity
+import average_word_embeddings
 import n_gram_matching
 from sentiment import sentiment_feature
 import numpy as np
