@@ -4,6 +4,7 @@ from sentiment import sentiment_feature
 from SVD import SVD
 from TFIDF import TFIDF
 import baseline_features
+from cue_words import cue_words
 import numpy as np
 from preprocessing import DataSet
 from sklearn.model_selection import GridSearchCV
@@ -17,7 +18,8 @@ class Models:
                     sentiment_feature.SentimentFeature(),
                     SVD.SVD(),
                     TFIDF.TFIDF(),
-                    baseline_features.BaselineFeature()]
+                    baseline_features.BaselineFeature(),
+                    cue_words.CueWords()]
         self.features_train = np.hstack([feature.read() for feature in features])
         self.labels_train = DataSet(path="../FNC-1").get_labels()
         self.features_test = np.hstack([feature.read('competition_test') for feature in features])
