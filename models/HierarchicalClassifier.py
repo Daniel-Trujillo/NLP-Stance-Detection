@@ -1,4 +1,6 @@
-import average_word_embeddings
+import sys
+sys.path.append('./average_word_embeddings')
+import cosine_similarity
 import n_gram_matching
 from sentiment import sentiment_feature
 import numpy as np
