@@ -24,22 +24,40 @@ class SVD:
         data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc, self.sent)
 
         vocabulary = set()
+        headline_body = []
         for i, row in data.iterrows():
             vocabulary.update(row['Headline'].split(' '))
             vocabulary.update(row['Body'].split(' '))
+            headline_body.append(row['Headline'] + ' ' + row['Body'])
         headlines = data.Headline.to_numpy()
         bodies = data.Body.to_numpy()
 
-        vectorizer = TfidfVectorizer(vocabulary=vocabulary)
-        headline_TF_IDF = vectorizer.fit_transform(headlines)
-        body_TF_IDF = vectorizer.fit_transform(bodies)
+        if self.name == 'train':
+            vectorizer = TfidfVectorizer(vocabulary=vocabulary)
+            headline_body_TF_IDF = vectorizer.fit(headline_body)
+            with open('../feature_files/headline_body_tfidf_vectorizer.pkl', 'wb') as f:
+                pickle.dump(headline_body_TF_IDF, f)
+            headline_TF_IDF = headline_body_TF_IDF.transform(headlines)
+            body_TF_IDF = headline_body_TF_IDF.transform(bodies)
+            # Selecting the top 50 components
+            svd = TruncatedSVD(n_components=50)
+            svd.fit(np.vstack(headline_TF_IDF, body_TF_IDF))
+            with open('../feature_files/headline_body_svd.pkl', 'wb') as f:
+                pickle.dump(svd, f)
+            headline_TF_IDF = svd.transform(headline_TF_IDF)
+            body_TF_IDF = svd.transform(body_TF_IDF)
+        else:
+            headline_body_TF_IDF = pickle.load(open('../feature_files/headline_body_tfidf_vectorizer.pkl', 'rb'))
+            headline_TF_IDF = headline_body_TF_IDF.transform(headlines)
+            body_TF_IDF = headline_body_TF_IDF.transform(bodies)
+            svd = pickle.load(open('../feature_files/headline_body_svd.pkl', 'rb'))
+            headline_TF_IDF = svd.transform(headline_TF_IDF)
+            body_TF_IDF = svd.transform(body_TF_IDF)
 
-        # Selecting the top 50 components
-        svd = TruncatedSVD(n_components=50)
-        headline_TF_IDF = svd.fit(headline_TF_IDF)
-        body_TF_IDF = svd.fit(body_TF_IDF)
-
-        return sklearn.metrics.pairwise.cosine_similarity(headline_TF_IDF, body_TF_IDF)
+        features = []
+        for h, b in zip(headline_TF_IDF, body_TF_IDF):
+            features.append(sklearn.metrics.pairwise.cosine_similarity(h, b)[0][0])
+        return np.array(features)
 
     def create_feature_file(self, path):
         features = self.get_feature()
