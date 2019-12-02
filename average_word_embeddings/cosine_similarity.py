@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from gensim.models import KeyedVectors
 import sklearn
 import pickle

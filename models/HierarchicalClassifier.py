@@ -4,7 +4,7 @@ import cosine_similarity
 import n_gram_matching
 from sentiment import sentiment_feature
 import numpy as np
-import preprocessing
+from preprocessing import DataSet
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import f1_score, accuracy_score, confusion_matrix
 from sklearn.linear_model import LogisticRegression
