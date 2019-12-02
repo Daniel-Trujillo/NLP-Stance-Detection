@@ -5,6 +5,7 @@ import os
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
+from scipy.sparse import vstack
 
 SVD_FILE = "../feature_files/svd_features.pkl"
 SVD_TEST_FILE = "../feature_files/svd_test_features.pkl"
@@ -41,7 +42,7 @@ class SVD:
             body_TF_IDF = headline_body_TF_IDF.transform(bodies)
             # Selecting the top 50 components
             svd = TruncatedSVD(n_components=50)
-            svd.fit(np.vstack([headline_TF_IDF, body_TF_IDF]))
+            svd.fit(vstack([headline_TF_IDF, body_TF_IDF]))
             with open('../feature_files/headline_body_svd.pkl', 'wb') as f:
                 pickle.dump(svd, f)
             headline_TF_IDF = svd.transform(headline_TF_IDF)
@@ -56,7 +57,7 @@ class SVD:
 
         features = []
         for h, b in zip(headline_TF_IDF, body_TF_IDF):
-            features.append(sklearn.metrics.pairwise.cosine_similarity(h, b)[0][0])
+            features.append(sklearn.metrics.pairwise.cosine_similarity([h], [b])[0][0])
         return np.array(features)
 
     def create_feature_file(self, path):
