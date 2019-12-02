@@ -41,7 +41,7 @@ class SVD:
             body_TF_IDF = headline_body_TF_IDF.transform(bodies)
             # Selecting the top 50 components
             svd = TruncatedSVD(n_components=50)
-            svd.fit(np.vstack(headline_TF_IDF, body_TF_IDF))
+            svd.fit(np.vstack([headline_TF_IDF, body_TF_IDF]))
             with open('../feature_files/headline_body_svd.pkl', 'wb') as f:
                 pickle.dump(svd, f)
             headline_TF_IDF = svd.transform(headline_TF_IDF)
