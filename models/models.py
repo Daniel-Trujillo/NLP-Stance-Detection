@@ -3,6 +3,7 @@ from n_gram_matching import n_gram_matching
 from sentiment import sentiment_feature
 from SVD import SVD
 from TFIDF import TFIDF
+import baseline_features
 import numpy as np
 from preprocessing import DataSet
 from sklearn.model_selection import GridSearchCV
@@ -15,7 +16,8 @@ class Models:
                     n_gram_matching.NGramMatching(),
                     sentiment_feature.SentimentFeature(),
                     SVD.SVD(),
-                    TFIDF.TFIDF()]
+                    TFIDF.TFIDF(),
+                    baseline_features.BaselineFeature()]
         self.features_train = np.hstack([feature.read() for feature in features])
         self.labels_train = DataSet(path="../FNC-1").get_labels()
         self.features_test = np.hstack([feature.read('competition_test') for feature in features])
