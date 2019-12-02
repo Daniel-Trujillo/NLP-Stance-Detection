@@ -1,5 +1,5 @@
-from average_word_embeddings import cosine_similarity
-from n_gram_matching import n_gram_matching
+import average_word_embeddings.cosine_similarity
+import n_gram_matching
 from sentiment import sentiment_feature
 import numpy as np
 from preprocessing import DataSet
