@@ -22,6 +22,7 @@ models = Models(lr)
 
 best_params, mean, std = models.grid_search(parameters=parameter_space, k=10, scoring=make_scorer(mixed_F1))
 
+print("BEST PARAMETERS: ")
 print(best_params)
 
 print("Best parameters found a mean F1-score of " + str(mean) + " with a standard deviation of " + str(std))
@@ -34,4 +35,3 @@ models.train()
 predictions, true = models.test()
 
 F1_score = mixed_F1(true, predictions)
-print("F1-Score testing: " + str(F1_score))

@@ -45,7 +45,7 @@ class TFIDF:
 
         features = []
         for h, b in zip(headline_TF_IDF, body_TF_IDF):
-            features.append(sklearn.metrics.pairwise.cosine_similarity(h,b)[0][0])
+            features.append(sklearn.metrics.pairwise.cosine_similarity(h, b)[0][0])
         return np.array(features)
 
     def create_feature_file(self, path):

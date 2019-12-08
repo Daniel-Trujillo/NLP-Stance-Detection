@@ -14,7 +14,7 @@ COSINE_SIMILARITY_TEST_FILE = "../feature_files/similarity_test_features.pkl"
 
 class CosineSimilarity:
     def __init__(self, name="train", path="../FNC-1", lemmatize=True, remove_stop=True, remove_punc=False):
-        self.model = KeyedVectors.load_word2vec_format('../average_word_embeddings/GoogleNews-vectors-negative300.bin.gz', binary=True)
+        self.model = None
         self.bodies = {}
         self.path = path
         self.name = name
@@ -23,6 +23,7 @@ class CosineSimilarity:
         self.remove_punc = remove_punc
 
     def get_feature(self):
+        self.model = KeyedVectors.load_word2vec_format('../average_word_embeddings/GoogleNews-vectors-negative300.bin.gz', binary=True)
         ds = DataSet(self.name, self.path)
         data = ds.preprocess(self.lemmatize, self.remove_stop, self.remove_punc)
         cosine_similarities = []
