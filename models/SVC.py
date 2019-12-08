@@ -10,15 +10,21 @@ def mixed_F1(true, pred):
 
 
 parameter_space = {
-        'kernel': ['poly', 'rbf', 'sigmoid'],
-        'C': [1, 10, 100, 1000],
-        'gamma': [0, 5, 10]
+        'kernel': ['rbf', 'sigmoid'],
+        'C': [1, 10, 100],
+        'gamma': [0, 5, 10, 'auto']
     }
 
 clf = SVC()
 models = Models(clf)
 best_params, mean, std = models.grid_search(parameters=parameter_space, k=10, scoring=make_scorer(mixed_F1))
 
+print("Best Params:")
+print(best_params)
+print("mean")
+print(mean)
+print("std")
+print(std)
 
 clf = SVC(kernel=best_params['kernel'], C=best_params['C'], gamma=best_params['gamma'], max_iter=10000)
 
